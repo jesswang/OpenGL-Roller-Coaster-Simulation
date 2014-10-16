@@ -51,7 +51,7 @@
     float g_vLandTranslate[3] = {0.0, 0.0, 0.0};
     float g_vLandScale[3] = {1.0, 1.0, 1.0};
 
-    double eye_x = 0.0, eye_y = 0.0, eye_z = 0.0, center_x = 0.0, center_y = 0.0, center_z = 0.0, up_x = 0.0, up_y = 0.0, up_z = 0.0;
+    double eye_x = -15.0, eye_y = -15.0, eye_z = 0.0, center_x = 0.0, center_y = 0.0, center_z = 0.0, up_x = 0.0, up_y = 0.0, up_z = 1.0;
 
     GLuint textureSky[1];
 
@@ -181,15 +181,6 @@
         }
         ++u;
         glutTimerFunc(100, simulateCoasterRide, u);
-        /*eye_x = spline_points[index]->x;
-        eye_y = spline_points[index]->y;
-        eye_z = spline_points[index]->z;
-        center_x = eye_x + tangent_vectors[index]->x;
-        center_y = eye_y + tangent_vectors[index]->y;
-        center_z = eye_z + tangent_vectors[index]->z;
-        up_x = normal_vec->x;
-        up_y = normal_vec->y;
-        up_z = normal_vec->z;*/
     }
 
     void drawSplines()
@@ -201,7 +192,7 @@
         for(int i = 0; i < g_iNumOfSplines; ++i)
         {
             int index = 0;
-            for(int j = 1; j + 2 < g_Splines[i].numControlPoints; ++j)
+            for(int j = 1; j + 2 <= g_Splines[i].numControlPoints; ++j)
             {
               struct point* binormal_vec = (struct point*) malloc(sizeof(struct point));
               for(double u = 0.0; u < 1.0; u += 0.001)
@@ -218,7 +209,7 @@
                 tangent_vec->x = computeTangent(g_Splines[i].points[j-1].x, g_Splines[i].points[j].x, g_Splines[i].points[j+1].x, g_Splines[i].points[j+2].x, u);
                 tangent_vec->y = computeTangent(g_Splines[i].points[j-1].y, g_Splines[i].points[j].y, g_Splines[i].points[j+1].y, g_Splines[i].points[j+2].y, u);
                 tangent_vec->z = computeTangent(g_Splines[i].points[j-1].z, g_Splines[i].points[j].z, g_Splines[i].points[j+1].z, g_Splines[i].points[j+2].z, u);
-                //tangent_vec = unit(tangent_vec);
+                tangent_vec = unit(tangent_vec);
                 tangent_vectors.push_back(tangent_vec);
 
                 if(u == 0.0)
@@ -244,10 +235,7 @@
                 //printf("%f, %f, %f\n", up_x, up_y, up_z);
                 
                 ++index;
-                free(tangent_vec);
-                free(normal_vec);
               }
-              free(binormal_vec);
             }
         }
         glEnd();
@@ -333,7 +321,7 @@
         gluPerspective(60.0, 600.0/600.0, 0.01, 1000.0);
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-        gluLookAt(-15.0, -15.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+        //gluLookAt(-15.0, -15.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
         glEnable(GL_DEPTH_TEST);  
         glLineWidth(2.0);        
         glGenTextures(1, textureSky);
@@ -359,7 +347,7 @@
         glPopMatrix();
 
         //simulateCoasterRide();
-        //gluLookAt(eye_x, eye_y, eye_z, center_x, center_y, center_z, up_x, up_y, up_z);
+        gluLookAt(eye_x, eye_y, eye_z, center_x, center_y, center_z, up_x, up_y, up_z);
         glutSwapBuffers();
     }
 
@@ -479,15 +467,6 @@
         glutPassiveMotionFunc(mouseidle);
         glutMouseFunc(mousebutton);
         glutMainLoop();
-
-        for(int i = 0; i < g_iNumOfSplines; ++i)
-        {
-            for(int j = 0; j + 2 < g_Splines[i].numControlPoints; ++j)
-            {
-              free(g_Splines[i].points);
-            }
-            free(g_Splines);
-        }
 
         return 0;
     }
