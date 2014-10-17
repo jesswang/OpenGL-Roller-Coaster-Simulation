@@ -34,7 +34,9 @@
     std::vector<struct point*> spline_points;
     std::vector<struct point*> tangent_vectors;
     std::vector<struct point*> normal_vectors;
+    std::vector<struct point*> binormal_vectors;
 
+    //keeps track of index in spline for moving camera for first person view in display()
     int u = 0;
 
     int g_vMousePos[2] = {0, 0};
@@ -117,12 +119,12 @@
               i++;
             }
         }
-        //printf("Num of control points %d\n", iLength);
         free(cName);
 
         return 0;
     }
 
+    //returns single coordinate of catmull rom spline point based on four input control points (p-1, p, p+1, and p+2)
     double catmullRomPoint(double p1, double p2, double p3, double p4, double u)
     {
         double v1 = 1.0 * p2;
@@ -133,15 +135,16 @@
         return v4 * pow(u, 3) + v3 * pow(u, 2) + v2 * u + v1;
     }
 
+    //returns single coordinate of tangent vector based on four input control points
     double computeTangent(double p1, double p2, double p3, double p4, double u)
     {
-        double v1 = 1.0 * p2;
         double v2 = -0.5 * p1 + 0.5 * p3;
         double v3 = 1.0 * p1 - 2.5 * p2 + 2.0 * p3 - 0.5 * p4;
         double v4 = -0.5 * p1 + 1.5 * p2 - 1.5 * p3 + 0.5 * p4;
         return v4 * 3 * pow(u, 2) + v3 * 2 * u + v2;
     }
 
+    //returns a pointer to the cross product of vectors v1 and v2
     struct point* computeCrossProduct(struct point* v1, struct point* v2)
     {
         struct point* n = (struct point*) malloc(sizeof(struct point));
@@ -151,6 +154,7 @@
         return n;
     }
 
+    //returns a pointer to a normalized vector
     struct point* unit(struct point* v)
     {
         //struct point* n = (struct point*) malloc(sizeof(struct point));
@@ -161,22 +165,34 @@
         return v;
     }
 
-    void simulateCoasterRide(int u)
+    //returns a pointer to the vector resulting from the addition of v1 and v2
+    struct point* add(struct point* v1, struct point* v2)
     {
-        if(!spline_points.empty() && u < spline_points.size())
-        {
-            eye_x = spline_points[u]->x;
-            eye_y = spline_points[u]->y;
-            eye_z = spline_points[u]->z;
-            center_x = spline_points[u+1]->x;
-            center_y = spline_points[u+1]->y;
-            center_z = spline_points[u+1]->z;
-            up_x = 0.0;
-            up_y = 0.0;
-            up_z = 1.0;
-            ++u;
-        }
-        glutTimerFunc(100, simulateCoasterRide, u);
+        struct point* p = (struct point*) malloc(sizeof(struct point));
+        p->x = v1->x + v2->x;
+        p->y = v1->y + v2->y;
+        p->z = v1->z + v2->z;
+        return p;
+    }
+
+    //returns a pointer to the vector resulting from the multiplication of v1 and v2
+    struct point* mult(struct point* v1, double val)
+    {
+        struct point* p = (struct point*) malloc(sizeof(struct point));
+        p->x = v1->x * val;
+        p->y = v1->y * val;
+        p->z = v1->z * val;
+        return p;
+    }
+
+    //returns a pointer to the vector resulting from the subtraction of v2 from v1
+    struct point* sub(struct point* v1, struct point* v2)
+    {
+        struct point* p = (struct point*) malloc(sizeof(struct point));
+        p->x = v1->x - v2->x;
+        p->y = v1->y - v2->y;
+        p->z = v1->z - v2->z;
+        return p;
     }
 
     void drawSplines()
@@ -208,7 +224,7 @@
                 tangent_vec = unit(tangent_vec);
                 tangent_vectors.push_back(tangent_vec);
 
-                if(u == 0.0)
+                if(u == 0.0) //set binormal to arbitrary vector (90 degrees away from tangent vector)
                 {
                     binormal_vec->x = tangent_vec->y*-1;
                     binormal_vec->y = tangent_vec->x;
@@ -220,34 +236,90 @@
                 normal_vec = unit(computeCrossProduct(tangent_vec, binormal_vec));
                 normal_vectors.push_back(normal_vec);
 
+                //compute binormal and normalize it
                 binormal_vec = unit(computeCrossProduct(tangent_vec, normal_vec));
+                binormal_vectors.push_back(binormal_vec);
 
                 glVertex3d(catmull_vec->x, catmull_vec->y, catmull_vec->z);
-
-                /*if(index % 500 == 0)
-                {
-                  glVertex3d(normal_vec->x, normal_vec->y, normal_vec->z);
-                }*/
-                //printf("%f, %f, %f\n", up_x, up_y, up_z);
                 
                 ++index;
               }
             }
         }
         glEnd();
-        /*for(int i = 0; i < g_iNumOfSplines; ++i)
+    }
+
+    void drawRail()
+    {
+        for(int i = 0; i < spline_points.size()-1; ++i)
         {
-        for(int k = 0; k < (g_Splines[i].numControlPoints - 2)*1000; ++k)
-        {
-          if(k % 500 == 0)
-          {
-            glBegin(GL_LINES);
-            glVertex3d(g_Splines[i].catmull_rom_points[k].x, g_Splines[i].catmull_rom_points[k].y, g_Splines[i].catmull_rom_points[k].z);
-            glVertex3d(g_Splines[i].tangent_vectors[k].x, g_Splines[i].tangent_vectors[k].y, g_Splines[i].tangent_vectors[k].z);
+            glBegin(GL_QUADS);
+                struct point* v0 = (struct point*) malloc(sizeof(struct point));
+                struct point* v1 = (struct point*) malloc(sizeof(struct point));
+                struct point* v2 = (struct point*) malloc(sizeof(struct point));
+                struct point* v3 = (struct point*) malloc(sizeof(struct point));
+                struct point* v4 = (struct point*) malloc(sizeof(struct point));
+                struct point* v5 = (struct point*) malloc(sizeof(struct point));
+                struct point* v6 = (struct point*) malloc(sizeof(struct point));
+                struct point* v7 = (struct point*) malloc(sizeof(struct point));
+            
+                v0 = add(spline_points[i], mult(sub(normal_vectors[i], binormal_vectors[i]), 0.0001));
+                v1 = add(spline_points[i], mult(add(normal_vectors[i], binormal_vectors[i]), 0.0001));
+                v2 = add(spline_points[i], mult(add(mult(normal_vectors[i], -1), binormal_vectors[i]), 0.0001));
+                v3 = add(spline_points[i], mult(sub(mult(normal_vectors[i], -1), binormal_vectors[i]), 0.0001));
+            
+                v4 = add(spline_points[i+1], mult(sub(normal_vectors[i+1], binormal_vectors[i+1]), 0.0001));
+                v5 = add(spline_points[i+1], mult(add(normal_vectors[i+1], binormal_vectors[i+1]), 0.0001));
+                v6 = add(spline_points[i+1], mult(add(mult(normal_vectors[i+1], -1), binormal_vectors[i+1]), 0.0001));
+                v7 = add(spline_points[i+1], mult(sub(mult(normal_vectors[i+1], -1), binormal_vectors[i+1]), 0.0001));
+            
+                //front
+                glVertex3d(v0->x, v0->y, v0->z);
+                glVertex3d(v1->x, v1->y, v1->z);
+                glVertex3d(v2->x, v2->y, v2->z);
+                glVertex3d(v3->x, v3->y, v3->z);
+            
+                //right
+                glVertex3d(v4->x, v4->y, v4->z);
+                glVertex3d(v5->x, v5->y, v5->z);
+                glVertex3d(v1->x, v1->y, v1->z);
+                glVertex3d(v0->x, v0->y, v0->z);
+            
+                //back
+                glVertex3d(v4->x, v4->y, v4->z);
+                glVertex3d(v5->x, v5->y, v5->z);
+                glVertex3d(v6->x, v6->y, v6->z);
+                glVertex3d(v7->x, v7->y, v7->z);
+            
+                //left
+                glVertex3d(v2->x, v2->y, v2->z);
+                glVertex3d(v6->x, v6->y, v6->z);
+                glVertex3d(v7->x, v7->y, v7->z);
+                glVertex3d(v3->x, v3->y, v3->z);
+            
+                //top
+                glVertex3d(v1->x, v1->y, v1->z);
+                glVertex3d(v5->x, v5->y, v5->z);
+                glVertex3d(v6->x, v6->y, v6->z);
+                glVertex3d(v2->x, v2->y, v2->z);
+            
+                //bottom
+                glVertex3d(v0->x, v0->y, v0->z);
+                glVertex3d(v4->x, v4->y, v4->z);
+                glVertex3d(v7->x, v7->y, v7->z);
+                glVertex3d(v3->x, v3->y, v3->z);
+            
+                /*glVertex3d(spline_points[i]->x, spline_points[i]->y, spline_points[i]->z);
+                glVertex3d(spline_points[i]->x+tangent_vectors[i]->x*0.01, spline_points[i]->y+tangent_vectors[i]->y*0.01, spline_points[i]->z+tangent_vectors[i]->z*0.01);
+                glVertex3d(spline_points[i]->x+tangent_vectors[i]->x*0.01+binormal_vectors[i]->x*0.01, spline_points[i]->y+tangent_vectors[i]->y*0.01+binormal_vectors[i]->y*0.01, spline_points[i]->z+tangent_vectors[i]->z*0.01+binormal_vectors[i]->z*0.01);
+                glVertex3d(spline_points[i]->x+binormal_vectors[i]->x*0.01, spline_points[i]->y+binormal_vectors[i]->y*0.01, spline_points[i]->z+binormal_vectors[i]->z*0.01);
+            
+                glVertex3d(spline_points[i+1]->x, spline_points[i+1]->y, spline_points[i+1]->z);
+                glVertex3d(spline_points[i+1]->x+tangent_vectors[i+1]->x*0.01, spline_points[i+1]->y+tangent_vectors[i+1]->y*0.01, spline_points[i+1]->z+tangent_vectors[i+1]->z*0.01);
+                glVertex3d(spline_points[i+1]->x+tangent_vectors[i+1]->x*0.01+binormal_vectors[i+1]->x*0.01, spline_points[i+1]->y+tangent_vectors[i+1]->y*0.01+binormal_vectors[i+1]->y*0.01, spline_points[i+1]->z+tangent_vectors[i+1]->z*0.01+binormal_vectors[i+1]->z*0.01);
+                glVertex3d(spline_points[i+1]->x+binormal_vectors[i+1]->x*0.01, spline_points[i+1]->y+binormal_vectors[i+1]->y*0.01, spline_points[i+1]->z+binormal_vectors[i+1]->z*0.01);*/
             glEnd();
-          }
         }
-        }*/
     }
 
     void drawGround()
@@ -314,15 +386,13 @@
         glClearColor(0.0, 0.0, 0.0, 0.0);   
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        gluPerspective(60.0, 600.0/600.0, 0.01, 1000.0);
+        gluPerspective(60.0, 640.0/480.0, 0.01, 1000.0);
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
         //gluLookAt(-15.0, -15.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
         glEnable(GL_DEPTH_TEST);  
         glLineWidth(2.0);        
         glGenTextures(1, textureSky);
-        
-        //glutTimerFunc(100, simulateCoasterRide, u);
     }
 
     void display()
@@ -331,7 +401,8 @@
         glPushMatrix();
         if(!spline_points.empty())
         {
-            gluLookAt(spline_points[u]->x, spline_points[u]->y, spline_points[u]->z, spline_points[u+80]->x, spline_points[u+80]->y, spline_points[u+80]->z, 0,0,1);
+            gluLookAt(spline_points[u]->x, spline_points[u]->y, spline_points[u]->z, spline_points[u]->x + tangent_vectors[u]->x, spline_points[u]->y + tangent_vectors[u]->y, spline_points[u]->z + tangent_vectors[u]->z, normal_vectors[u]->x, normal_vectors[u]->y, normal_vectors[u]->z);
+            /*gluLookAt(spline_points[u]->x, spline_points[u]->y, spline_points[u]->z, spline_points[u+80]->x, spline_points[u+80]->y, spline_points[u+80]->z, 0,0,1);*/
             if(u < spline_points.size() - 80)
             {
                 u+=80;
@@ -341,7 +412,7 @@
             }
         }
         drawSplines();
-        //glBindTexture(GL_TEXTURE_2D, texture_bottom[0]);
+        drawRail();
         glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE); 
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR); 
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR); 
@@ -352,7 +423,6 @@
         glDisable(GL_TEXTURE_2D);
         glPopMatrix();
 
-        //simulateCoasterRide();
         glutSwapBuffers();
     }
 
@@ -460,7 +530,7 @@
 
         glutInit(&argc,argv);
         glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH | GLUT_RGBA);
-        glutInitWindowSize(600, 600);
+        glutInitWindowSize(640, 480);
         glutInitWindowPosition(0, 0);
         glutCreateWindow("Roller Coaster Simulation");
 
