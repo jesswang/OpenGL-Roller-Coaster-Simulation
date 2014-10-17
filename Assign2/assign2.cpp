@@ -329,15 +329,18 @@
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glPushMatrix();
-        drawSplines();
-        gluLookAt(spline_points[u]->x, spline_points[u]->y, spline_points[u]->z, spline_points[u+10]->x, spline_points[u+100]->y, spline_points[u+100]->z, 0,0,1);
-        if(u < spline_points.size() - 100)
+        if(!spline_points.empty())
         {
-            u+=100;
+            gluLookAt(spline_points[u]->x, spline_points[u]->y, spline_points[u]->z, spline_points[u+80]->x, spline_points[u+80]->y, spline_points[u+80]->z, 0,0,1);
+            if(u < spline_points.size() - 80)
+            {
+                u+=80;
+            }
+            else{
+                u = 0;
+            }
         }
-        else{
-            u = 0;
-        }
+        drawSplines();
         //glBindTexture(GL_TEXTURE_2D, texture_bottom[0]);
         glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE); 
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR); 

@@ -8,11 +8,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "Assign2/assign2.cpp"
-         timestampString = "435192192.233479"
+         timestampString = "435199854.872661"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "350"
-         endingLineNumber = "350"
+         startingLineNumber = "355"
+         endingLineNumber = "355"
          landmarkName = "display()"
          landmarkType = "7">
       </FileBreakpoint>
@@ -21,12 +21,12 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "Assign2/assign2.cpp"
-         timestampString = "435191743.654073"
+         timestampString = "435197829.114692"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "213"
-         endingLineNumber = "213"
-         landmarkName = "drawSplines()"
+         startingLineNumber = "177"
+         endingLineNumber = "177"
+         landmarkName = "simulateCoasterRide(int u)"
          landmarkType = "7">
       </FileBreakpoint>
    </FileBreakpoints>
