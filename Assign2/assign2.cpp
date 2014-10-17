@@ -200,7 +200,7 @@
         spline_points.clear();
         tangent_vectors.clear();
         normal_vectors.clear();
-        glBegin(GL_LINE_STRIP);
+        //glBegin(GL_LINE_STRIP);
         for(int i = 0; i < g_iNumOfSplines; ++i)
         {
             int index = 0;
@@ -240,20 +240,20 @@
                 binormal_vec = unit(computeCrossProduct(tangent_vec, normal_vec));
                 binormal_vectors.push_back(binormal_vec);
 
-                glVertex3d(catmull_vec->x, catmull_vec->y, catmull_vec->z);
+                //glVertex3d(catmull_vec->x, catmull_vec->y, catmull_vec->z);
                 
                 ++index;
               }
             }
         }
-        glEnd();
+        //glEnd();
     }
 
     void drawRail()
     {
-        for(int i = 0; i < spline_points.size()-1; ++i)
+        glBegin(GL_QUADS);
+        for(int i = 0; i < spline_points.size() - 100; i+=100)
         {
-            glBegin(GL_QUADS);
                 struct point* v0 = (struct point*) malloc(sizeof(struct point));
                 struct point* v1 = (struct point*) malloc(sizeof(struct point));
                 struct point* v2 = (struct point*) malloc(sizeof(struct point));
@@ -263,29 +263,44 @@
                 struct point* v6 = (struct point*) malloc(sizeof(struct point));
                 struct point* v7 = (struct point*) malloc(sizeof(struct point));
             
-                v0 = add(spline_points[i], mult(sub(normal_vectors[i], binormal_vectors[i]), 0.0001));
-                v1 = add(spline_points[i], mult(add(normal_vectors[i], binormal_vectors[i]), 0.0001));
-                v2 = add(spline_points[i], mult(add(mult(normal_vectors[i], -1), binormal_vectors[i]), 0.0001));
-                v3 = add(spline_points[i], mult(sub(mult(normal_vectors[i], -1), binormal_vectors[i]), 0.0001));
+                v0 = add(spline_points[i], mult(sub(normal_vectors[i], binormal_vectors[i]), 0.0003));
+                v1 = add(spline_points[i], mult(add(normal_vectors[i], binormal_vectors[i]), 0.0003));
+                v2 = add(spline_points[i], mult(add(mult(normal_vectors[i], -1), binormal_vectors[i]), 0.0003));
+                v3 = add(spline_points[i], mult(sub(mult(normal_vectors[i], -1), binormal_vectors[i]), 0.0003));
             
-                v4 = add(spline_points[i+1], mult(sub(normal_vectors[i+1], binormal_vectors[i+1]), 0.0001));
-                v5 = add(spline_points[i+1], mult(add(normal_vectors[i+1], binormal_vectors[i+1]), 0.0001));
-                v6 = add(spline_points[i+1], mult(add(mult(normal_vectors[i+1], -1), binormal_vectors[i+1]), 0.0001));
-                v7 = add(spline_points[i+1], mult(sub(mult(normal_vectors[i+1], -1), binormal_vectors[i+1]), 0.0001));
+                v4 = add(spline_points[i+100], mult(sub(normal_vectors[i+100], binormal_vectors[i+100]), 0.0003));
+                v5 = add(spline_points[i+100], mult(add(normal_vectors[i+100], binormal_vectors[i+100]), 0.0003));
+                v6 = add(spline_points[i+100], mult(add(mult(normal_vectors[i+100], -1), binormal_vectors[i+100]), 0.0003));
+                v7 = add(spline_points[i+100], mult(sub(mult(normal_vectors[i+100], -1), binormal_vectors[i+100]), 0.0003));
+            
+            /*v0 = spline_points[i];
+            v1 = add(spline_points[i], mult(tangent_vectors[i], 0.0003));
+            v2 = add(spline_points[i], add(mult(tangent_vectors[i], 0.0003), mult(binormal_vectors[i], 0.0003)));
+            v3 = add(spline_points[i], mult(binormal_vectors[i], 0.0003));
+            
+            v4 = spline_points[i+100];
+            v5 = add(spline_points[i+100], mult(tangent_vectors[i+100], 0.0003));
+            v6 = add(spline_points[i+100], add(mult(tangent_vectors[i+100], 0.0003), mult(binormal_vectors[i+100], 0.0003)));
+            v7 = add(spline_points[i+100], mult(binormal_vectors[i+100], 0.0003));*/
             
                 //front
+            
                 glVertex3d(v0->x, v0->y, v0->z);
                 glVertex3d(v1->x, v1->y, v1->z);
                 glVertex3d(v2->x, v2->y, v2->z);
                 glVertex3d(v3->x, v3->y, v3->z);
             
+            
                 //right
+            
                 glVertex3d(v4->x, v4->y, v4->z);
                 glVertex3d(v5->x, v5->y, v5->z);
                 glVertex3d(v1->x, v1->y, v1->z);
                 glVertex3d(v0->x, v0->y, v0->z);
             
+            
                 //back
+            
                 glVertex3d(v4->x, v4->y, v4->z);
                 glVertex3d(v5->x, v5->y, v5->z);
                 glVertex3d(v6->x, v6->y, v6->z);
@@ -318,8 +333,8 @@
                 glVertex3d(spline_points[i+1]->x+tangent_vectors[i+1]->x*0.01, spline_points[i+1]->y+tangent_vectors[i+1]->y*0.01, spline_points[i+1]->z+tangent_vectors[i+1]->z*0.01);
                 glVertex3d(spline_points[i+1]->x+tangent_vectors[i+1]->x*0.01+binormal_vectors[i+1]->x*0.01, spline_points[i+1]->y+tangent_vectors[i+1]->y*0.01+binormal_vectors[i+1]->y*0.01, spline_points[i+1]->z+tangent_vectors[i+1]->z*0.01+binormal_vectors[i+1]->z*0.01);
                 glVertex3d(spline_points[i+1]->x+binormal_vectors[i+1]->x*0.01, spline_points[i+1]->y+binormal_vectors[i+1]->y*0.01, spline_points[i+1]->z+binormal_vectors[i+1]->z*0.01);*/
-            glEnd();
         }
+        glEnd();
     }
 
     void drawGround()
