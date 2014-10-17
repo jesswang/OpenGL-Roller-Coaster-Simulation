@@ -163,23 +163,19 @@
 
     void simulateCoasterRide(int u)
     {
-        if(spline_points.size() > 0 && u < spline_points.size())
+        if(!spline_points.empty() && u < spline_points.size())
         {
             eye_x = spline_points[u]->x;
             eye_y = spline_points[u]->y;
             eye_z = spline_points[u]->z;
-            center_x = eye_x + tangent_vectors[u]->x;
-            center_y = eye_y + tangent_vectors[u]->y;
-            center_z = eye_z + tangent_vectors[u]->z;
-            up_x = normal_vectors[u]->x;
-            up_y = normal_vectors[u]->x;
-            up_z = normal_vectors[u]->x;
+            center_x = spline_points[u+1]->x;
+            center_y = spline_points[u+1]->y;
+            center_z = spline_points[u+1]->z;
+            up_x = 0.0;
+            up_y = 0.0;
+            up_z = 1.0;
+            ++u;
         }
-        else
-        {
-            u = 0;
-        }
-        ++u;
         glutTimerFunc(100, simulateCoasterRide, u);
     }
 
@@ -222,16 +218,16 @@
 
                 //compute normal and normalize it
                 normal_vec = unit(computeCrossProduct(tangent_vec, binormal_vec));
-                  normal_vectors.push_back(normal_vec);
+                normal_vectors.push_back(normal_vec);
 
                 binormal_vec = unit(computeCrossProduct(tangent_vec, normal_vec));
 
                 glVertex3d(catmull_vec->x, catmull_vec->y, catmull_vec->z);
 
-                if(index % 500 == 0)
+                /*if(index % 500 == 0)
                 {
                   glVertex3d(normal_vec->x, normal_vec->y, normal_vec->z);
-                }
+                }*/
                 //printf("%f, %f, %f\n", up_x, up_y, up_z);
                 
                 ++index;
@@ -326,8 +322,7 @@
         glLineWidth(2.0);        
         glGenTextures(1, textureSky);
         
-        glutTimerFunc(100, simulateCoasterRide, u);
-        ++u;
+        //glutTimerFunc(100, simulateCoasterRide, u);
     }
 
     void display()
@@ -335,6 +330,14 @@
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glPushMatrix();
         drawSplines();
+        gluLookAt(spline_points[u]->x, spline_points[u]->y, spline_points[u]->z, spline_points[u+10]->x, spline_points[u+100]->y, spline_points[u+100]->z, 0,0,1);
+        if(u < spline_points.size() - 100)
+        {
+            u+=100;
+        }
+        else{
+            u = 0;
+        }
         //glBindTexture(GL_TEXTURE_2D, texture_bottom[0]);
         glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE); 
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR); 
@@ -347,7 +350,6 @@
         glPopMatrix();
 
         //simulateCoasterRide();
-        gluLookAt(eye_x, eye_y, eye_z, center_x, center_y, center_z, up_x, up_y, up_z);
         glutSwapBuffers();
     }
 
