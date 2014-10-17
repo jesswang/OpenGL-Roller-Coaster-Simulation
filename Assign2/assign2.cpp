@@ -252,7 +252,7 @@
     void drawRail()
     {
         glBegin(GL_QUADS);
-        for(int i = 0; i < spline_points.size() - 200; i+=200)
+        for(int i = 0; i < spline_points.size() - 100; i+=100)
         {
             struct point* v0 = (struct point*) malloc(sizeof(struct point));
             struct point* v1 = (struct point*) malloc(sizeof(struct point));
@@ -268,85 +268,127 @@
             v2 = add(spline_points[i], mult(add(mult(normal_vectors[i], -1), binormal_vectors[i]), 0.03));
             v3 = add(spline_points[i], mult(sub(mult(normal_vectors[i], -1), binormal_vectors[i]), 0.03));
         
-            v4 = add(spline_points[i+200], mult(sub(normal_vectors[i+200], binormal_vectors[i+200]), 0.03));
-            v5 = add(spline_points[i+200], mult(add(normal_vectors[i+200], binormal_vectors[i+200]), 0.03));
-            v6 = add(spline_points[i+200], mult(add(mult(normal_vectors[i+200], -1), binormal_vectors[i+200]), 0.03));
-            v7 = add(spline_points[i+200], mult(sub(mult(normal_vectors[i+200], -1), binormal_vectors[i+200]), 0.03));
+            v4 = add(spline_points[i+100], mult(sub(normal_vectors[i+100], binormal_vectors[i+100]), 0.03));
+            v5 = add(spline_points[i+100], mult(add(normal_vectors[i+100], binormal_vectors[i+100]), 0.03));
+            v6 = add(spline_points[i+100], mult(add(mult(normal_vectors[i+100], -1), binormal_vectors[i+100]), 0.03));
+            v7 = add(spline_points[i+100], mult(sub(mult(normal_vectors[i+100], -1), binormal_vectors[i+100]), 0.03));
             
             //first rail
             //front
-            glVertex3d(v0->x+0.1, v0->y+0.1, v0->z+0.1);
-            glVertex3d(v1->x+0.1, v1->y+0.1, v1->z+0.1);
-            glVertex3d(v2->x+0.1, v2->y+0.1, v2->z+0.1);
-            glVertex3d(v3->x+0.1, v3->y+0.1, v3->z+0.1);
+            glVertex3d(v0->x+0.2, v0->y+0.2, v0->z+0.2);
+            glVertex3d(v1->x+0.2, v1->y+0.2, v1->z+0.2);
+            glVertex3d(v2->x+0.2, v2->y+0.2, v2->z+0.2);
+            glVertex3d(v3->x+0.2, v3->y+0.2, v3->z+0.2);
         
             //right
-            glVertex3d(v4->x+0.1, v4->y+0.1, v4->z+0.1);
-            glVertex3d(v5->x+0.1, v5->y+0.1, v5->z+0.1);
-            glVertex3d(v1->x+0.1, v1->y+0.1, v1->z+0.1);
-            glVertex3d(v0->x+0.1, v0->y+0.1, v0->z+0.1);
+            glVertex3d(v4->x+0.2, v4->y+0.2, v4->z+0.2);
+            glVertex3d(v5->x+0.2, v5->y+0.2, v5->z+0.2);
+            glVertex3d(v1->x+0.2, v1->y+0.2, v1->z+0.2);
+            glVertex3d(v0->x+0.2, v0->y+0.2, v0->z+0.2);
         
             //back
-            glVertex3d(v4->x+0.1, v4->y+0.1, v4->z+0.1);
-            glVertex3d(v5->x+0.1, v5->y+0.1, v5->z+0.1);
-            glVertex3d(v6->x+0.1, v6->y+0.1, v6->z+0.1);
-            glVertex3d(v7->x+0.1, v7->y+0.1, v7->z+0.1);
+            glVertex3d(v4->x+0.2, v4->y+0.2, v4->z+0.2);
+            glVertex3d(v5->x+0.2, v5->y+0.2, v5->z+0.2);
+            glVertex3d(v6->x+0.2, v6->y+0.2, v6->z+0.2);
+            glVertex3d(v7->x+0.2, v7->y+0.2, v7->z+0.2);
         
             //left
-            glVertex3d(v2->x+0.1, v2->y+0.1, v2->z+0.1);
-            glVertex3d(v6->x+0.1, v6->y+0.1, v6->z+0.1);
-            glVertex3d(v7->x+0.1, v7->y+0.1, v7->z+0.1);
-            glVertex3d(v3->x+0.1, v3->y+0.1, v3->z+0.1);
+            glVertex3d(v2->x+0.2, v2->y+0.2, v2->z+0.2);
+            glVertex3d(v6->x+0.2, v6->y+0.2, v6->z+0.2);
+            glVertex3d(v7->x+0.2, v7->y+0.2, v7->z+0.2);
+            glVertex3d(v3->x+0.2, v3->y+0.2, v3->z+0.2);
         
             //top
-            glVertex3d(v1->x+0.1, v1->y+0.1, v1->z+0.1);
-            glVertex3d(v5->x+0.1, v5->y+0.1, v5->z+0.1);
-            glVertex3d(v6->x+0.1, v6->y+0.1, v6->z+0.1);
-            glVertex3d(v2->x+0.1, v2->y+0.1, v2->z+0.1);
+            glVertex3d(v1->x+0.2, v1->y+0.2, v1->z+0.2);
+            glVertex3d(v5->x+0.2, v5->y+0.2, v5->z+0.2);
+            glVertex3d(v6->x+0.2, v6->y+0.2, v6->z+0.2);
+            glVertex3d(v2->x+0.2, v2->y+0.2, v2->z+0.2);
         
             //bottom
-            glVertex3d(v0->x+0.1, v0->y+0.1, v0->z+0.1);
-            glVertex3d(v4->x+0.1, v4->y+0.1, v4->z+0.1);
-            glVertex3d(v7->x+0.1, v7->y+0.1, v7->z+0.1);
-            glVertex3d(v3->x+0.1, v3->y+0.1, v3->z+0.1);
+            glVertex3d(v0->x+0.2, v0->y+0.2, v0->z+0.2);
+            glVertex3d(v4->x+0.2, v4->y+0.2, v4->z+0.2);
+            glVertex3d(v7->x+0.2, v7->y+0.2, v7->z+0.2);
+            glVertex3d(v3->x+0.2, v3->y+0.2, v3->z+0.2);
             
             
             //second rail
             //front
-            glVertex3d(v0->x-0.1, v0->y-0.1, v0->z-0.1);
-            glVertex3d(v1->x-0.1, v1->y-0.1, v1->z-0.1);
-            glVertex3d(v2->x-0.1, v2->y-0.1, v2->z-0.1);
-            glVertex3d(v3->x-0.1, v3->y-0.1, v3->z-0.1);
+            glVertex3d(v0->x-0.2, v0->y-0.2, v0->z-0.2);
+            glVertex3d(v1->x-0.2, v1->y-0.2, v1->z-0.2);
+            glVertex3d(v2->x-0.2, v2->y-0.2, v2->z-0.2);
+            glVertex3d(v3->x-0.2, v3->y-0.2, v3->z-0.2);
             
             //right
-            glVertex3d(v4->x-0.1, v4->y-0.1, v4->z-0.1);
-            glVertex3d(v5->x-0.1, v5->y-0.1, v5->z-0.1);
-            glVertex3d(v1->x-0.1, v1->y-0.1, v1->z-0.1);
-            glVertex3d(v0->x-0.1, v0->y-0.1, v0->z-0.1);
+            glVertex3d(v4->x-0.2, v4->y-0.2, v4->z-0.2);
+            glVertex3d(v5->x-0.2, v5->y-0.2, v5->z-0.2);
+            glVertex3d(v1->x-0.2, v1->y-0.2, v1->z-0.2);
+            glVertex3d(v0->x-0.2, v0->y-0.2, v0->z-0.2);
             
             //back
-            glVertex3d(v4->x-0.1, v4->y-0.1, v4->z-0.1);
-            glVertex3d(v5->x-0.1, v5->y-0.1, v5->z-0.1);
-            glVertex3d(v6->x-0.1, v6->y-0.1, v6->z-0.1);
-            glVertex3d(v7->x-0.1, v7->y-0.1, v7->z-0.1);
+            glVertex3d(v4->x-0.2, v4->y-0.2, v4->z-0.2);
+            glVertex3d(v5->x-0.2, v5->y-0.2, v5->z-0.2);
+            glVertex3d(v6->x-0.2, v6->y-0.2, v6->z-0.2);
+            glVertex3d(v7->x-0.2, v7->y-0.2, v7->z-0.2);
             
             //left
-            glVertex3d(v2->x-0.1, v2->y-0.1, v2->z-0.1);
-            glVertex3d(v6->x-0.1, v6->y-0.1, v6->z-0.1);
-            glVertex3d(v7->x-0.1, v7->y-0.1, v7->z-0.1);
-            glVertex3d(v3->x-0.1, v3->y-0.1, v3->z-0.1);
+            glVertex3d(v2->x-0.2, v2->y-0.2, v2->z-0.2);
+            glVertex3d(v6->x-0.2, v6->y-0.2, v6->z-0.2);
+            glVertex3d(v7->x-0.2, v7->y-0.2, v7->z-0.2);
+            glVertex3d(v3->x-0.2, v3->y-0.2, v3->z-0.2);
             
             //top
-            glVertex3d(v1->x-0.1, v1->y-0.1, v1->z-0.1);
-            glVertex3d(v5->x-0.1, v5->y-0.1, v5->z-0.1);
-            glVertex3d(v6->x-0.1, v6->y-0.1, v6->z-0.1);
-            glVertex3d(v2->x-0.1, v2->y-0.1, v2->z-0.1);
+            glVertex3d(v1->x-0.2, v1->y-0.2, v1->z-0.2);
+            glVertex3d(v5->x-0.2, v5->y-0.2, v5->z-0.2);
+            glVertex3d(v6->x-0.2, v6->y-0.2, v6->z-0.2);
+            glVertex3d(v2->x-0.2, v2->y-0.2, v2->z-0.2);
             
             //bottom
-            glVertex3d(v0->x-0.1, v0->y-0.1, v0->z-0.1);
-            glVertex3d(v4->x-0.1, v4->y-0.1, v4->z-0.1);
-            glVertex3d(v7->x-0.1, v7->y-0.1, v7->z-0.1);
-            glVertex3d(v3->x-0.1, v3->y-0.1, v3->z-0.1);
+            glVertex3d(v0->x-0.2, v0->y-0.2, v0->z-0.2);
+            glVertex3d(v4->x-0.2, v4->y-0.2, v4->z-0.2);
+            glVertex3d(v7->x-0.2, v7->y-0.2, v7->z-0.2);
+            glVertex3d(v3->x-0.2, v3->y-0.2, v3->z-0.2);
+            
+            
+            //slat
+            if(i % 300 == 0)
+            {
+                //front
+                glVertex3d(v0->x+0.2, v0->y+0.2, v0->z+0.2);
+                glVertex3d(v1->x+0.2, v1->y+0.2, v1->z+0.2);
+                glVertex3d(v2->x-0.2, v2->y-0.2, v2->z-0.2);
+                glVertex3d(v3->x-0.2, v3->y-0.2, v3->z-0.2);
+                
+                //right
+                glVertex3d(v7->x-0.2, v7->y-0.2, v7->z-0.2);
+                glVertex3d(v6->x-0.2, v6->y-0.2, v6->z-0.2);
+                glVertex3d(v2->x-0.2, v2->y-0.2, v2->z-0.2);
+                glVertex3d(v3->x-0.2, v3->y-0.2, v3->z-0.2);
+                
+                //back
+                glVertex3d(v7->x-0.2, v7->y-0.2, v7->z-0.2);
+                glVertex3d(v6->x-0.2, v6->y-0.2, v6->z-0.2);
+                glVertex3d(v5->x+0.2, v5->y+0.2, v5->z+0.2);
+                glVertex3d(v4->x+0.2, v4->y+0.2, v4->z+0.2);
+                
+                //left
+                glVertex3d(v5->x+0.2, v5->y+0.2, v5->z+0.2);
+                glVertex3d(v1->x+0.2, v1->y+0.2, v1->z+0.2);
+                glVertex3d(v0->x+0.2, v0->y+0.2, v0->z+0.2);
+                glVertex3d(v4->x+0.2, v4->y+0.2, v4->z+0.2);
+                
+                //top
+                glVertex3d(v2->x-0.2, v2->y-0.2, v2->z-0.2);
+                glVertex3d(v6->x-0.2, v6->y-0.2, v6->z-0.2);
+                glVertex3d(v5->x+0.2, v5->y+0.2, v5->z+0.2);
+                glVertex3d(v1->x+0.2, v1->y+0.2, v1->z+0.2);
+                
+                //bottom
+                glVertex3d(v3->x-0.2, v3->y-0.2, v3->z-0.2);
+                glVertex3d(v7->x-0.2, v7->y-0.2, v7->z-0.2);
+                glVertex3d(v4->x+0.2, v4->y+0.2, v4->z+0.2);
+                glVertex3d(v0->x+0.2, v0->y+0.2, v0->z+0.2);
+            }
+            
             
             free(v0); free(v1); free(v2); free(v3); free(v4); free(v5); free(v6); free(v7);
         }
@@ -417,7 +459,7 @@
         glClearColor(0.0, 0.0, 0.0, 0.0);   
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        gluPerspective(60.0, 640.0/480.0, 0.01, 1000.0);
+        gluPerspective(100.0, 640.0/480.0, 0.01, 1000.0);
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
         //gluLookAt(-15.0, -15.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
